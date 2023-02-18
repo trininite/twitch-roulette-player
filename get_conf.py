@@ -1,7 +1,8 @@
 import json
 
 
-def get_user_info() -> dict:
+
+def user_info() -> dict:
     with open('devs_conf.json') as json_file:
         data = json.load(json_file)
         
@@ -10,7 +11,7 @@ def get_user_info() -> dict:
         
         return user_info
 
-def get_server_info() -> dict:
+def server_info() -> dict:
     with open('devs_conf.json') as json_file:
         data = json.load(json_file)
         
@@ -19,7 +20,7 @@ def get_server_info() -> dict:
         
         return server_info
 
-def get_bot_info() -> dict:
+def bot_info() -> dict:
     with open('devs_conf.json') as json_file:
         data = json.load(json_file)
         
