@@ -1,0 +1,10 @@
+*.sc
+*.txt
+.vscode
+__pycache__
+*.pyc
+listner.py
+*.log
+
+#this is my config file
+devs_conf.json
