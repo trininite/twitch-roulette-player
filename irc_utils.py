@@ -3,14 +3,29 @@ import threading
 import queue
 import secrets
 import time
+import json
+import get_conf
 from time import sleep as sleep
 
 
-def randhex(size):
-    return secrets.token_hex(size)
 
-def launch_connection(server :str, port :int, nickname :str, token :str, channel :str):
+
+def launch_connection():
     sock = socket.socket()
+
+    
+    server_info = get_conf.server_info()
+
+    server = server_info["server"]
+    port = server_info["port"]
+
+    
+    user_info = get_conf.user_info()
+
+    token = user_info["token"]
+    nickname = user_info["nickname"]
+    channel = server_info["channel"]
+
 
     sock.connect((server, port))
 
@@ -49,7 +64,7 @@ def get_message_text(message :str) -> str:
         return out
 
 
-def get_message_authour(message) -> str():
+def get_message_authour(message) -> str:
     for i in range(len(message)):
         if message[i] == "!":
             return message[1:i]
@@ -67,51 +82,72 @@ def log_for_three(sock):
 """
 
 
-def start_listner(thread_args :tuple) -> None:
-
-    server = thread_args[0]
-    port = thread_args[1]
-    nickname = thread_args[2]
-    token = thread_args[3]
-    channel = thread_args[4]
-    file_name = thread_args[5]
-    pill2kill = thread_args[6]
+def start_listner(file_name, kill_switch, bot_client_filter:bool) -> None:
 
 
+    server_info = get_conf.server_info()
+
+    server = server_info["server"]
+    port = server_info["port"]
+
+    
+    user_info = get_conf.user_info()
+
+    token = user_info["token"]
+    nickname = user_info["nickname"]
+    channel = server_info["channel"]
+
+    bot_info = get_conf.bot_info()
+    bot_nickname = bot_info["nickname"]
+
+
+    #clears log file
     open(file_name, "w").close()
 
-    while not pill2kill.wait(1):
-        listner_sock = launch_connection(server, port, nickname, token, channel)
+    while not kill_switch.wait(1):
+        listner_sock = launch_connection()
 
-        while not pill2kill.wait(1):
+        while not kill_switch.wait(1):
 
             resp = get_messages(listner_sock)
 
             with open(file_name, "a") as listener:
-                listener.write(resp)
+                if not bot_client_filter:
+                    listener.write(resp)
+                elif bot_client_filter:
+                    #call filter function
+                    pass
+                    
 
+                
 
-def start_threaded_listner(server :str, port :int, nickname :str, token :str, channel :str) -> tuple:
+def start_threaded_listner() -> tuple:
 
     #if you need just the file name: just_file_name = file_name.split("/")[2] 
-    file_name = "./cache/" + randhex(16) + ".log"
+    file_name = "./cache/" + secrets.token_hex(16) + ".log"
 
 
-    pill2kill = threading.Event()
+    kill_switch = threading.Event()
     
+    bot_client_filter = False
 
-    thread_args = (server, port, nickname, token, channel, file_name, pill2kill)
+    thread_args = (file_name, kill_switch, bot_client_filter)
 
+    #This used to work, leaving it here just it case
     #listner_thread = threading.Thread(target = lambda q, arg : q.put(start_listner(arg)), args=(thread_args,))
 
-    listner_thread = threading.Thread(target = start_listner, args=(thread_args,))
+    listner_thread = threading.Thread(target = start_listner, args=(thread_args))
 
     listner_thread.daemon = True
 
-    return (listner_thread, file_name, pill2kill)
+    return (listner_thread, file_name, kill_switch)
 
 
-def get_balance(sock) -> int:
+#TODO Refactor this function using new threaded lisneter ^^^ 
+def get_balance(sock):
+
+    print("fix the function lazy bastard")
+    return
     
     que = queue.Queue()
     background_log = threading.Thread(target = lambda q, arg : q.put(log_for_three(arg)), args=(que, sock))
