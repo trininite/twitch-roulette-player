@@ -117,6 +117,7 @@ def start_listner(file_name, kill_switch, bot_client_filter:bool) -> None:
                 elif bot_client_filter:
                     #call filter function
                     pass
+    open(file_name, "w").close()
                     
 
                 
