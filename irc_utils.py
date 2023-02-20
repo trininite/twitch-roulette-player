@@ -9,7 +9,6 @@ import get_conf
 
 
 
-
 def launch_connection():
     sock = socket.socket()
 
@@ -65,10 +64,11 @@ def get_message_text(message :str) -> str:
 
 
 def get_message_authour(message) -> str:
-    for i in range(len(message)):
-        if message[i] == "!":
-            return message[1:i]
-
+    if message != "":
+        temp = message.split(":")[1].split("!")[0]
+        return temp
+    
+    return ""
 
 
 
@@ -100,13 +100,25 @@ def start_listner(file_name, kill_switch, bot_client_filter:bool) -> None:
         while not kill_switch.wait(1):
 
             resp = get_messages(listner_sock)
+            author = get_message_authour(resp_array[i])
 
             with open(file_name, "a") as listener:
+                resp_array = resp.split("\n")
+                
                 if not bot_client_filter:
-                    listener.write(resp)
+                    for i in range(len(resp_array)):
+                        listener.write(listener.write(f"{author}:{resp_array[i]}"))
+                        
                 elif bot_client_filter:
-                    #call filter function
-                    pass
+                    for i in range(len(resp_array)):
+                        author = get_message_authour(resp_array[i])
+                        print(f"Author: |{author}|")
+                        
+                        if author != "" and author == bot_nickname or author == nickname:
+                            print(resp_array[i])
+                            listener.write(f"{author}:{resp_array[i]}")
+
+
                     
 
                 
@@ -162,6 +174,23 @@ def get_balance(sock):
     balance = int(balance)
 
     return balance
+
+def new_get_balance(sock):
+    
+    listner_args = start_listner_threaded()
+
+    listner_thread = listner_args[0]
+    file_name = listner_args[1]
+    kill_switch = listner_args[2]
+
+    listner_thread.start()
+
+    irc = launch_connection()
+
+
+
+
+
 
 
 
