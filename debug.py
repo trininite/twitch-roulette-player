@@ -22,9 +22,9 @@ print(user_info["nickname"])
 """
 
 #shows threaded listner working consitently
-def listner_validate(loops):
+def listner_validate(loops, log_time):
 
-    for i in range(loops+1):
+    for i in range(1, loops+1):
 
         #os.system("./clear_cache.sh")
 
@@ -55,7 +55,8 @@ def listner_validate(loops):
         open(file2, 'w').close()
         open(file3, 'w').close()
 
-        time.sleep(5)
+
+        time.sleep(log_time)
 
         kill_switch1.set()
         kill_switch2.set()
@@ -90,14 +91,35 @@ def listner_validate(loops):
         else:
             print("invalid")
 
+
+
+def single_listner_test(loops, log_time):
+    for i in range(1, loops+1):
+
+        #os.system("./clear_cache.sh")
+
+        listner1_args = irc_utils.start_listner_threaded()
+
+        listner1 = listner1_args[0]
+        file1 = listner1_args[1]
+        kill_switch1 = listner1_args[2]
+        
+
+        listner1.start()
+
         open(file1, 'w').close()
-        open(file2, 'w').close()
-        open(file3, 'w').close()
+
+        time.sleep(log_time)
+
+        kill_switch1.set()
+
+        listner1.join()
+
 
 
 
 def main():
-    listner_validate(1)
+    single_listner_test(1, 10)
 
     
 
