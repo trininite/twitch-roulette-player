@@ -5,7 +5,7 @@ import secrets
 import time
 import json
 import get_conf
-from time import sleep as sleep
+
 
 
 
@@ -70,16 +70,6 @@ def get_message_authour(message) -> str:
             return message[1:i]
 
 
-"""
-def log_for_three(sock):
-    for i in range(10):
-        resp = get_messages(sock)
-
-        if get_message_authour(resp) == "schnozebot" and get_message_text(resp).startswith("trininite"):
-            return get_message_text(resp)
-            
-    return(log_for_three(sock))
-"""
 
 
 def start_listner(file_name, kill_switch, bot_client_filter:bool) -> None:
@@ -117,12 +107,11 @@ def start_listner(file_name, kill_switch, bot_client_filter:bool) -> None:
                 elif bot_client_filter:
                     #call filter function
                     pass
-    open(file_name, "w").close()
                     
 
                 
 
-def start_threaded_listner() -> tuple:
+def start_listner_threaded() -> tuple:
 
     #if you need just the file name: just_file_name = file_name.split("/")[2] 
     file_name = "./cache/" + secrets.token_hex(16) + ".log"

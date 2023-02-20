@@ -28,9 +28,9 @@ def listner_validate(loops):
 
         #os.system("./clear_cache.sh")
 
-        listner1_args = irc_utils.start_threaded_listner()
-        listner2_args = irc_utils.start_threaded_listner()
-        listner3_args = irc_utils.start_threaded_listner()
+        listner1_args = irc_utils.start_listner_threaded()
+        listner2_args = irc_utils.start_listner_threaded()
+        listner3_args = irc_utils.start_listner_threaded()
 
 
 
@@ -97,7 +97,7 @@ def listner_validate(loops):
 
 
 def main():
-    listner_validate(10)
+    listner_validate(1)
 
     
 
