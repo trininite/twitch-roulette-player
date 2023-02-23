@@ -45,6 +45,7 @@ def launch_connection():
 
 
 def get_messages(sock) -> str:
+    #Take kill_switch as an argument and add it as the condition for the while loop instead of 1
     while 1:
         try:
             resp = sock.recv(2048).decode('utf-8')
